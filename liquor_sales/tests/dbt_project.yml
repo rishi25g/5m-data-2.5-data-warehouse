@@ -1,0 +1,6 @@
+models:
+  austin_bikeshare_demo:
+    # Config indicated by + and applies to all files under models/example/
+    star:
+      +materialized: table
+      +schema : star

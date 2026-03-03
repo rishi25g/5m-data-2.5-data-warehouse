@@ -1,0 +1,26 @@
+austin_bikeshare_demo:
+  outputs:
+    dev:
+      dataset: austin_bikeshare_demo
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: US
+      method: oauth
+      priority: interactive
+      project: stellar-state-488004-p8
+      threads: 1
+      type: bigquery
+  target: dev
+my_test_dbt:
+  outputs:
+    dev:
+      dataset: test
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      location: US
+      method: oauth
+      priority: interactive
+      project: stellar-state-488004-p8
+      threads: 1
+      type: bigquery
+  target: dev
