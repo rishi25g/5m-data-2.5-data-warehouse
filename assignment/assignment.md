@@ -26,7 +26,77 @@ Answer:
 
 Paste the `dim_station.sql` model here:
 
-```sql
+```
+WITH stations AS (
+
+    SELECT DISTINCT 
+        station_id,
+        name,
+        status,
+        location,
+        address,
+        alternate_name,
+        city_asset_number,
+        property_type,
+        number_of_docks,
+        power_type,
+        footprint_length,
+        footprint_width,
+        notes,
+        council_district,
+        image,
+        modified_date
+    FROM {{ source('austin_bikeshare', 'bikeshare_stations') }}
+
+),
+
+trip_starts AS (
+
+    SELECT
+        start_station_name AS station_name,
+        COUNT(start_station_name) AS total_starts,
+        SUM(duration * 60) AS total_duration  -- convert minutes to seconds
+    FROM {{ source('austin_bikeshare', 'bikeshare_trips') }}
+    GROUP BY start_station_name
+
+),
+
+trip_ends AS (
+
+    SELECT
+        end_station_name AS station_name,
+        COUNT(end_station_name) AS total_ends
+    FROM {{ source('austin_bikeshare', 'bikeshare_trips') }}
+    GROUP BY end_station_name
+
+)
+
+SELECT
+    s.station_id,
+    s.name,
+    s.status,
+    s.location,
+    s.address,
+    s.alternate_name,
+    s.city_asset_number,
+    s.property_type,
+    s.number_of_docks,
+    s.power_type,
+    s.footprint_length,
+    s.footprint_width,
+    s.notes,
+    s.council_district,
+    s.image,
+    s.modified_date,
+    COALESCE(ts.total_duration, 0) AS total_duration,
+    COALESCE(ts.total_starts, 0) AS total_starts,
+    COALESCE(te.total_ends, 0) AS total_ends
+
+FROM stations s
+LEFT JOIN trip_starts ts
+    ON s.name = ts.station_name
+LEFT JOIN trip_ends te
+    ON s.name = te.station_name
 
 ```
 
